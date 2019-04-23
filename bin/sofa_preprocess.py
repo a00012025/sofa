@@ -1324,6 +1324,22 @@ def sofa_preprocess(cfg):
                 filtered_groups.append({'group': group,
                                         'color': filter.color,
                                         'keyword': filter.keyword})
+        if len(strace_traces) > 0:
+            df_grouped = strace_traces.groupby('name')
+            for filter in cfg.strace_filters:
+                group = strace_traces[strace_traces['name'].str.contains(
+                    filter.keyword)]
+                filtered_groups.append({'group': group,
+                                        'color': filter.color,
+                                        'keyword': filter.keyword})
+        if len(diskstat_traces) > 0:
+            df_grouped = diskstat_traces.groupby('name')
+            for filter in cfg.diskstat_filters:
+                group = diskstat_traces[diskstat_traces['name'].str.contains(
+                    filter.keyword)]
+                filtered_groups.append({'group': group,
+                                        'color': filter.color,
+                                        'keyword': filter.keyword})
     # ### hierarchical swarm generation
     try:
         swarm_groups = []

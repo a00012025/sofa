@@ -51,6 +51,18 @@ if __name__ == "__main__":
         type=str,
         required=False,
         help='A string of list of pairs of keyword and color')
+    parser.add_argument(
+        '--strace_filters',
+        metavar='"keyword1:color1,keyword2:color2"',
+        type=str,
+        required=False,
+        help='A string of list of pairs of keyword and color')
+    parser.add_argument(
+        '--diskstat_filters',
+        metavar='"keyword1:color1,keyword2:color2"',
+        type=str,
+        required=False,
+        help='A string of list of pairs of keyword and color')
     parser.add_argument('--cpu_top_k', metavar='N', type=int, required=False,
                         help='K functions of the highest overheads')
     parser.add_argument('--num_iterations', metavar='N', type=int, required=False,
@@ -244,6 +256,22 @@ if __name__ == "__main__":
     if args.potato_server is not None:
         cfg.potato_server = args.potato_server
 
+    if args.strace_filters is not None:
+        pairs = args.strace_filters.split(',')
+        for pair in pairs:
+            cfg.strace_filters.append(
+                Filter(str(pair.split(':')[0]), str(pair.split(':')[1])))
+    else:
+        cfg.strace_filters.append(Filter('idle', 'black'))
+
+    if args.diskstat_filters is not None:
+        pairs = args.diskstat_filters.split(',')
+        for pair in pairs:
+            cfg.diskstat_filters.append(
+                Filter(str(pair.split(':')[0]), str(pair.split(':')[1])))
+    else:
+        cfg.diskstat_filters.append(Filter('idle', 'black'))
+
     cfg.gpu_filters.append(Filter('CUDA_COPY_H2D', 'Red'))
     cfg.gpu_filters.append(Filter('CUDA_COPY_D2H', 'Peru'))
     cfg.gpu_filters.append(Filter('CUDA_COPY_P2P', 'Purple'))
@@ -275,6 +303,10 @@ if __name__ == "__main__":
         print_info(cfg,"CPU filter = %s:%s" % (filter.keyword, filter.color))
     for filter in cfg.gpu_filters:
         print_info(cfg,"GPU filter = %s:%s" % (filter.keyword, filter.color))
+    for filter in cfg.strace_filters:
+        print_info(cfg,"strace filter = %s:%s" % (filter.keyword, filter.color))
+    for filter in cfg.diskstat_filters:
+        print_info(cfg,"diskstat filter = %s:%s" % (filter.keyword, filter.color))
 
     print_info(cfg,"logdir = %s" % cfg.logdir)
 
